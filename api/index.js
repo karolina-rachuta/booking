@@ -23,6 +23,7 @@ mongoose.connection.on("disconnected", () => {
 })
 
 //middlewares
+app.use(express.json());
 // when you go to endpoint auth, you will use authRoute
 app.use("/api/auth", authRoute); // http://localhost:8800/api/auth and http://localhost:8800/api/auth/register
 app.use("/api/users", usersRoute);

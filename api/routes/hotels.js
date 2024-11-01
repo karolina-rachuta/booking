@@ -6,6 +6,7 @@ const router = express.Router();
 //CREATE
 router.post("/", async (req, res) => {
 
+    //take hotel information from user:
     const newHotel = new Hotel(req.body)
 
     try {
