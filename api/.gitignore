@@ -1,0 +1,5 @@
+node_modules
+api/.history/
+.vs_code
+.idea
+.DS_Store
