@@ -127,11 +127,40 @@ export default router;
 ```js
 catch(err) {next(err)}
 ```
+
 to hit this middleware
 
 11. Authorization- creating User model, and creating register endpoint with register function. (as post- user visible in db)
 
 12. Encryption of password. We need to download new library:
+
 ```js
 npm add bcryptjs
+
+import bcrypt from "bcryptjs";
+const salt = bcrypt.genSaltSync(10);
+const hash = bcrypt.hashSync(req.body.password, salt);
+const newUser = new User({
+            username: req.body.username,
+            email: req.body.email,
+            password: hash
+        });
 ```
+13. login endpoint route and controller (post), checking correct username and correct password, hide info like password and isAdmin
+
+14. Adding Json web token - to hide in this token userInfo in the cookie, eg. to updateHotel user has to be admin
+```js
+npm add jsonwebtoken
+```
+15. to create our sectret key use command:
+```js
+openssl rand -base64 32
+```
+and then we need to hide it, and add it as second parametr for token
+
+16. to create cookie- to change our token into cookie we need cookie parser:
+```js
+npm add cookie-parser
+```
+
+and then in index.js use it as middleware
