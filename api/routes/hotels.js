@@ -1,76 +1,25 @@
 import express from "express";
-import Hotel from "../models/Hotel.js";
+import { createHotel, deleteHotel, getHotel, getHotels, updateHotel } from "../controllers/hotel.js";
 
 const router = express.Router();
 
 //CREATE
-router.post("/", async (req, res) => {
-
-    //take hotel information from user:
-    const newHotel = new Hotel(req.body)
-
-    try {
-        const savedHotel = await newHotel.save();
-        res.status(200).json(savedHotel);
-
-    } catch (error) {
-        res.status(500).json(err);
-    }
-})
+router.post("/", createHotel);
 
 //UPDATE
 
-router.put("/:id", async (req, res) => {
-    // mongoDb $set method to update hotel
-    try {
-        const updatedHotel = await Hotel.findByIdAndUpdate(req.params.id, {
-            $set: req.body
-        }, {new: true});
-        // it will return new version of our document in postman
-        res.status(200).json(updatedHotel);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
+router.put("/:id", updateHotel);
 
 //DELETE
 
-router.delete("/:id", async (req, res) => {
-    // mongoDb $set method to update hotel
-    try {
-        await Hotel.findByIdAndDelete(req.params.id);
-        // it will return new version of our document in postman
-        res.status(200).json("Hotel has been deleted.");
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
+router.delete("/:id", deleteHotel);
 
 //GET
 
-router.get("/:id", async (req, res) => {
-    // mongoDb $set method to update hotel
-    try {
-        const hotel = await Hotel.findById(req.params.id);
-        // it will return new version of our document in postman
-        res.status(200).json(hotel);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
+router.get("/:id", getHotel);
 
 //GET A HOTEL
 
-router.get("/", async (req, res, next) => {
-
-    try {
-        const hotels = await Hotel.find();
-        // it will return new version of our document in postman
-        res.status(200).json(hotels);
-    } catch (err) {
-        next(err);
-        // res.status(500).json(err);
-    }
-});
+router.get("/", getHotels);
 
 export default router;
