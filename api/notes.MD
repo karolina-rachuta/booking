@@ -113,3 +113,6 @@ export default router;
 
 7. To support the CRUD we need models (schema)
 - for each endpoint we create files with schema (Room.js, User.js, Hotel.js)
+
+8. Finished the route to create hotel (POST)  and test it on Postman (filled in the body all the needed data about the hotel), then it is visible in mongodb database
+//27min20
