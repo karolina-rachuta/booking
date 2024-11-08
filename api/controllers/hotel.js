@@ -47,15 +47,18 @@ export const getHotel = async (req, res, next) => {
     }
 }
 
+//http://localhost:8800/api/hotels?featured=true&limit=3&min=5&max=101
 export const getHotels = async (req, res, next) => {
+    const { min, max, limit, ...others } = req.query;
     try {
-        const hotels = await Hotel.find();
-        // it will return new version of our document in postman
+    const { min, max, limit, ...others } = req.query;
+    const hotels = await Hotel.find({...others, cheapestPrice: {$gt:min || 1, $lt:max || 999} }).limit({limit});
         res.status(200).json(hotels);
     } catch (err) {
         next(err);
     }
 }
+
 export const countByCity = async (req, res, next) => {
     const cities = req.query.cities.split(",");
     try {
