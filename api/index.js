@@ -6,6 +6,7 @@ import usersRoute from "./routes/users.js";
 import hotelsRoute from "./routes/hotels.js";
 import roomsRoute from "./routes/rooms.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
 dotenv.config();
@@ -24,8 +25,9 @@ mongoose.connection.on("disconnected", () => {
 })
 
 //middlewares -
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
+app.use(cors({ origin: 'http://localhost:3000' })); // Pozwól na dostęp z Reacta na localhost:3000
 
 // when you go to endpoint auth, you will use authRoute
 app.use("/api/auth", authRoute); // http://localhost:8800/api/auth and http://localhost:8800/api/auth/register
