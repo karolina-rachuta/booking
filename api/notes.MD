@@ -164,3 +164,7 @@ npm add cookie-parser
 ```
 
 and then in index.js use it as middleware
+
+17. creating functions to verifyUser, verifyAdmin ect
+
+18. 1h18
