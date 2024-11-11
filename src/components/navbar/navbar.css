@@ -14,8 +14,14 @@
   justify-content: space-between;
 }
 
+a {
+  text-decoration: none;
+}
+
 .logo{
   font-weight: 500;
+  color: white;
+
 }
 
 .navButton{
