@@ -2,7 +2,7 @@ import useFetch from "../../hooks/useFetch";
 import "./propertyList.css";
 
 const PropertyList = () => {
-  const { data, error, loading } = useFetch( "/hotels/countByType");
+  const { data, error, loading } = useFetch( "hotels/countByType");
   console.log(data);
 
   const images = [
