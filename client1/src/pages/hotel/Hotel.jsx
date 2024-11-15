@@ -1,12 +1,5 @@
 import { useState, useContext } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
-import Navbar from "../../components/navbar/Navbar";
-import Header from "../../components/header/Header";
-import MailList from "../../components/mailList/MailList";
-import Footer from "../../components/footer/Footer";
-import { SearchContext } from "../../context/SearchContext";
-import "./hotel.css";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleArrowLeft,
@@ -14,6 +7,18 @@ import {
   faCircleXmark,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
+
+import useFetch from "../../hooks/useFetch";
+import { SearchContext } from "../../context/SearchContext";
+import { AuthContext } from "../../context/AuthContext";
+
+import Navbar from "../../components/navbar/Navbar";
+import Header from "../../components/header/Header";
+import MailList from "../../components/mailList/MailList";
+import Footer from "../../components/footer/Footer";
+import Reserve from "../../components/reserve/Reserve";
+
+import "./hotel.css";
 
 const Hotel = () => {
   // const location = useLocation();
@@ -23,12 +28,16 @@ const Hotel = () => {
   const params = useParams();
   const id = params.id;
 
+  const navigate = useNavigate();
+
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const { data, loading, error, reFetch } = useFetch(`/hotels/find/${id}`);
 
   const { dates, options } = useContext(SearchContext);
+  const { user } = useContext(AuthContext);
 
   const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
   function dayDifference(date1, date2) {
@@ -53,6 +62,14 @@ const Hotel = () => {
     }
 
     setSlideNumber(newSlideNumber);
+  };
+
+  const handleReservation = () => {
+    if (user) {
+      setOpenModal(true);
+    } else {
+      navigate("/login");
+    }
   };
 
   return (
@@ -90,7 +107,7 @@ const Hotel = () => {
             </div>
           )}
           <div className="hotelWrapper">
-            <button className="bookNow">Reserve or Book Now!</button>
+            <button className="bookNow" onClick={handleReservation}>Reserve or Book Now!</button>
             <h1 className="hotelTitle">{data.name}</h1>
             <div className="hotelAddress">
               <FontAwesomeIcon icon={faLocationDot} />
@@ -127,9 +144,12 @@ const Hotel = () => {
                   excellent location score of 9.8!
                 </span>
                 <h2>
-                  <b>${days * data.cheapestPrice * options.room}</b> ({days} nights)
+                  <b>${days * data.cheapestPrice * options.room}</b> ({days}{" "}
+                  nights)
                 </h2>
-                <button>Reserve or Book Now!</button>
+                <button onClick={handleReservation}>
+                  Reserve or Book Now!
+                </button>
               </div>
             </div>
           </div>
@@ -137,6 +157,7 @@ const Hotel = () => {
           <Footer />
         </div>
       )}
+      {openModal && <Reserve setOpenModal={setOpenModal} hoteid={id}/>}
     </div>
   );
 };

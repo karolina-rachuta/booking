@@ -1,4 +1,5 @@
 import Hotel from "../models/Hotel.js";
+import Room from "../models/Room.js";
 
 export const createHotel = async (req, res, next) => {
     const newHotel = new Hotel(req.body)
@@ -49,10 +50,28 @@ export const getHotel = async (req, res, next) => {
 
 //http://localhost:8800/api/hotels?featured=true&limit=3&min=5&max=101
 export const getHotels = async (req, res, next) => {
-    const { min, max, limit, ...others } = req.query;
+    const {
+        min,
+        max,
+        limit,
+        ...others
+    } = req.query;
     try {
-    const { min, max, limit, ...others } = req.query;
-    const hotels = await Hotel.find({...others, cheapestPrice: {$gt:min || 1, $lt:max || 999} }).limit({limit});
+        const {
+            min,
+            max,
+            limit,
+            ...others
+        } = req.query;
+        const hotels = await Hotel.find({
+            ...others,
+            cheapestPrice: {
+                $gt: min || 1,
+                $lt: max || 999
+            }
+        }).limit({
+            limit
+        });
         res.status(200).json(hotels);
     } catch (err) {
         next(err);
@@ -90,15 +109,43 @@ export const countByType = async (req, res, next) => {
             type: "cabins"
         });
 
-        res.status(200).json([
-            {type: "hotel", count: hotelCount},
-            {type: "apartments", count: apartmentCount},
-            {type: "resorts", count: resortCount},
-            {type: "villas", count: villasCount},
-            {type: "cabins", count: cabinCount},
+        res.status(200).json([{
+                type: "hotel",
+                count: hotelCount
+            },
+            {
+                type: "apartments",
+                count: apartmentCount
+            },
+            {
+                type: "resorts",
+                count: resortCount
+            },
+            {
+                type: "villas",
+                count: villasCount
+            },
+            {
+                type: "cabins",
+                count: cabinCount
+            },
         ])
 
     } catch (err) {
         next(err);
     }
-}
+};
+
+
+
+export const getHotelRoom = async (req, res, next) => {
+    try {
+        const hotel = await Hotel.findById(req.params.id);
+        const list = await Promise.all(hotel.rooms.map(room => {
+            return Room.findById(room);
+        }))
+        res.status(200).json(list);
+    } catch (err) {
+        next(err);
+    }
+};
