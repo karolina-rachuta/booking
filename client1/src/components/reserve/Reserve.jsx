@@ -11,11 +11,16 @@ function Reserve({ setOpenModal, hoteid }) {
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { data, loading, error } = useFetch(`/hotels/room/${hoteid}`);
   const { dates } = useContext(SearchContext);
+  console.log(data);
+  console.log(dates);
 
   const getDatesFromRange = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const date = new Date(start.getTime());
+    console.log(date);
+    console.log(start);
+    console.log(end);
     let dates = [];
     while (date <= end) {
       dates.push(new Date(date).getTime());
@@ -30,8 +35,11 @@ function Reserve({ setOpenModal, hoteid }) {
 
   const isAvaiable = (roomNumber) => {
     //to mark unavaiable rooms
-    const isFound = [];
-  }
+    const isFound = roomNumber.unavailableDates.some((date) =>
+      allDates.includes(new Date(date).getTime())
+    );
+    return !isFound;
+  };
 
   const handleSelectedRooms = (e) => {
     const checked = e.target.checked;
@@ -57,7 +65,7 @@ function Reserve({ setOpenModal, hoteid }) {
         />
         <span>Select your rooms:</span>
         {data.map((item) => (
-          <div className="rItem">
+          <div className="rItem" key={item._id}>
             <div className="rItemInfo">
               <div className="rTitle">{item.title}</div>
               <div className="rDescription">{item.desc}</div>
@@ -67,20 +75,23 @@ function Reserve({ setOpenModal, hoteid }) {
               </div>
               <div className="rPrice">${item.price}</div>
             </div>
-
-            {item.roomNumbers.map((roomNumber) => (
-              <div className="room">
-                <label>{roomNumber.number}</label>
-                <input
-                  type="checkbox"
-                  value={roomNumber._id}
-                  onChange={handleSelectedRooms}
-                />
-              </div>
-            ))}
+            <div className="rSelectRooms">
+              {item.roomNumbers.map((roomNumber) => (
+                <div className="room" key={roomNumber._id}>
+                  <label>{roomNumber.number}</label>
+                  <input
+                    type="checkbox"
+                    value={roomNumber._id}
+                    onChange={handleSelectedRooms}
+                    disabled={!isAvaiable(roomNumber)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         ))}
-        <button onClick={handleReserveRoom} className="rButtons">
+
+        <button onClick={handleReserveRoom} className="rButton">
           Reserve now!
         </button>
       </div>
