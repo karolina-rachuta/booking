@@ -42,6 +42,22 @@ export const updateRoom = async (req, res, next) => {
     }
 }
 
+export const updateRoomAvailability = async (req, res, next) => {
+    // mongoDb $set method to update hotel
+    try {
+        await Room.updateOne({"roomNumbers._id": req.params.id}, {
+            $push: {
+                "roomNumbers.$.unavailableDates": req.body.dates
+            }
+            //updating nested properties "roomNumbers.$.unavailableDates"
+        });
+        // it will return new version of our document in postman
+        res.status(200).json("Room status has been updated");
+    } catch (err) {
+        next(err);
+    }
+}
+
 export const deleteRoom = async (req, res, next) => {
     const hotelId = req.params.hotelid;
     try {

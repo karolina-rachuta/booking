@@ -1,6 +1,8 @@
 import { useContext, useState } from "react";
+import {useNavigate} from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 import useFetch from "../../hooks/useFetch";
 import { SearchContext } from "../../context/SearchContext";
@@ -8,6 +10,7 @@ import { SearchContext } from "../../context/SearchContext";
 import "./reserve.css";
 
 function Reserve({ setOpenModal, hoteid }) {
+  const navigate = useNavigate();
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { data, loading, error } = useFetch(`/hotels/room/${hoteid}`);
   const { dates } = useContext(SearchContext);
@@ -51,8 +54,22 @@ function Reserve({ setOpenModal, hoteid }) {
     );
   };
 
-  const handleReserveRoom = () => {
+  const handleReserveRoom = async () => {
     //to reserve avaiable dates and after clicking removing those dates from avaiable dates
+    try {
+      await Promise.all(
+        selectedRooms.map((roomId) => {
+          const res = axios.put(`/rooms/availability/${roomId}`, {
+            dates: allDates,
+          });
+          return res.data;
+        })
+      );
+      setOpenModal(false);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
