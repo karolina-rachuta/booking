@@ -1,15 +1,30 @@
-import "./datatable.scss";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+
 import { DataGrid } from "@mui/x-data-grid";
-import { userColumns, userRows } from "../../datatablesource";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { userColumns } from "../../datatablesource";
+import axios from "axios";
+
 import useFetch from "../../hooks/useFetch";
 
-const Datatable = () => {
-const {data, loading, error} = useFetch("/users");
+import "./datatable.scss";
 
-  const handleDelete = (id) => {
-    // setData(data.filter((item) => item.id !== id));
+const Datatable = () => {
+  const location = useLocation();
+  const path = location.pathname.split("/")[1];
+
+  const [list, setList] = useState([]);
+  const { data, loading, error } = useFetch(`/${path}`);
+
+  useEffect(() => {
+    setList(data);
+  }, [data]);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/${path}/${id}`);
+    } catch {}
+    setList(list.filter((item) => item._id !== id));
   };
 
   const actionColumn = [
@@ -25,7 +40,7 @@ const {data, loading, error} = useFetch("/users");
             </Link>
             <div
               className="deleteButton"
-              onClick={() => handleDelete(params.row.id)}
+              onClick={() => handleDelete(params.row._id)}
             >
               Delete
             </div>
@@ -44,12 +59,12 @@ const {data, loading, error} = useFetch("/users");
       </div>
       <DataGrid
         className="datagrid"
-        rows={data}
+        rows={list}
         columns={userColumns.concat(actionColumn)}
-        pageSize={9}
-        rowsPerPageOptions={[9]}
+        pageSize={12}
+        rowsPerPageOptions={[12]}
         checkboxSelection
-        getRowId={row => row._id}
+        getRowId={(row) => row._id}
       />
     </div>
   );
