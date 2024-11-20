@@ -9,7 +9,7 @@ import useFetch from "../../hooks/useFetch";
 
 import "./datatable.scss";
 
-const Datatable = () => {
+const Datatable = ({columns}) => {
   const location = useLocation();
   const path = location.pathname.split("/")[1];
 
@@ -60,7 +60,7 @@ const Datatable = () => {
       <DataGrid
         className="datagrid"
         rows={list}
-        columns={userColumns.concat(actionColumn)}
+        columns={columns.concat(actionColumn)}
         pageSize={12}
         rowsPerPageOptions={[12]}
         checkboxSelection
