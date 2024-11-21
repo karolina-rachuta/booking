@@ -3,14 +3,14 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useState } from "react";
-import axios from "axios";
+import { hotelInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
+import axios from "axios";
 
-const NewHotel = ({ inputs, title }) => {
+const NewHotel = () => {
   const [files, setFiles] = useState("");
   const [info, setInfo] = useState({});
   const [rooms, setRooms] = useState([]);
-  const [uploaded, setUploaded] = useState(false);
 
   const { data, loading, error } = useFetch("/rooms");
 
@@ -18,7 +18,17 @@ const NewHotel = ({ inputs, title }) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  const handleSend = async (e) => {
+  const handleSelect = (e) => {
+    const value = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setRooms(value);
+  };
+  
+  console.log(files)
+
+  const handleClick = async (e) => {
     e.preventDefault();
     try {
       const list = await Promise.all(
@@ -26,38 +36,32 @@ const NewHotel = ({ inputs, title }) => {
           const data = new FormData();
           data.append("file", file);
           data.append("upload_preset", "upload");
-          const uploadResponse = await axios.post(
-            "https://api.cloudinary.com/v1_1/dvj2uq0qr/image/upload",
+          const uploadRes = await axios.post(
+            "https://api.cloudinary.com/v1_1/lamadev/image/upload",
             data
           );
-          const { url } = uploadResponse.data;
+
+          const { url } = uploadRes.data;
           return url;
         })
       );
-      const newHotel = { ...info, rooms, photos: list };
-      await axios.post("/hotels", newHotel);
-      setUploaded(true);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
-  const handleSelect = (e) => {
-    e.preventDefault();
-    const value = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setRooms(value);
-  };
+      const newhotel = {
+        ...info,
+        rooms,
+        photos: list,
+      };
 
+      await axios.post("/hotels", newhotel);
+    } catch (err) {console.log(err)}
+  };
   return (
     <div className="new">
       <Sidebar />
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>{title}</h1>
+          <h1>Add New Product</h1>
         </div>
         <div className="bottom">
           <div className="left">
@@ -85,18 +89,17 @@ const NewHotel = ({ inputs, title }) => {
                 />
               </div>
 
-              {inputs.map((input) => (
+              {hotelInputs.map((input) => (
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
+                    id={input.id}
+                    onChange={handleChange}
                     type={input.type}
                     placeholder={input.placeholder}
-                    onChange={handleChange}
-                    id={input.id}
                   />
                 </div>
               ))}
-
               <div className="formInput">
                 <label>Featured</label>
                 <select id="featured" onChange={handleChange}>
@@ -104,7 +107,6 @@ const NewHotel = ({ inputs, title }) => {
                   <option value={true}>Yes</option>
                 </select>
               </div>
-
               <div className="selectRooms">
                 <label>Rooms</label>
                 <select id="rooms" multiple onChange={handleSelect}>
@@ -118,9 +120,7 @@ const NewHotel = ({ inputs, title }) => {
                       ))}
                 </select>
               </div>
-
-              <button onClick={handleSend}>Send</button>
-              {uploaded && <p>Successfully added a new hotel.</p>}
+              <button onClick={handleClick}>Send</button>
             </form>
           </div>
         </div>

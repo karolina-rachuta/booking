@@ -9,7 +9,7 @@ export const createHotel = async (req, res, next) => {
         res.status(200).json(savedHotel);
 
     } catch (error) {
-        next(err);
+        next(error);
     }
 }
 
