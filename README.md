@@ -17,4 +17,4 @@ The application includes routing and schemas for users, hotels, and rooms.
 
 ## Demo:
 
-![screenshot](./src/assets/desktop.png)
+![screenshot](client1/src/assets/desktop.png)
